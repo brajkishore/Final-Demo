@@ -1,26 +1,6 @@
-  $(function() {
-      // $(document).tooltip({
-          // content: function () {
-              // return $(this).prop('title');
-	// },
-		  // tooltipClass: "random-styling"
-      // });
-	
-// $('.nav a').click(function(){
-    // $(".navbar-toggle").click();
-// }); 	
-// $('.collapse').click('li', function() {
-    // $('.navbar-collapse').collapse('hide');
-// });
-    // $("#bs-example-navbar-collapse-1 li a").click(function(event) {
-        // // check if window is small enough so dropdown is created
-    // $(".nav-collapse").removeClass("in").addClass("collapse");
-    // });
-    // $(".navbar li a").click(function(event) {
-        // // check if window is small enough so dropdown is created
-        // $("#navbar-toggle").is(":visible")
-            // $("#navbar-collapse").toggle();
-    // });    
+var cHLines=[];
+
+$(function() {
 
 //Collapse list on click
 $('.nav li a').on('click',function(){
@@ -28,24 +8,78 @@ $('.nav li a').on('click',function(){
     $('.navbar-collapse.in').collapse('hide');
 }) 
 
-//Keep tooltip open when mouseover
-// $( "[title]" ).bind( "mouseleave", function( event ) {
-	// event.stopImmediatePropagation();
-// 	
-	// var fixed = setTimeout('$("[title]").tooltip("close")', 1000);
-// 	
-	// $(".ui-tooltip").hover(
-	    // function(){clearTimeout (fixed);},
-	    // function(){$("[title]").tooltip("close");}
-		// );
-// })
-// 
-// .tooltip({
-	  // content: function () {
-	      // return $(this).prop('title');
-		// },
-	  // tooltipClass: "random-styling"
-// });
+
+var t='<div class="btn-group" style="float:inherit;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">'+
+'<select class="form-control" onClick="return scrollToSubjectGlobal(this.value)"'+
+'style="display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">'+
+	'<option value="goto" selected="selected">Go To</option>';
+	
+	
+	
+	
+var t2='';
+
+$('.chapHeadLines span').each(function(){
+	
+	//alert($(this).html());		
+	var id=$(this).attr('id').toString().split("-")[1];
+	var val=$(this).html();		
+	t2=t2+'<option value="'+id+'_opt">'+val+'</option>';	
+	cHLines.push({'id':id+'_opt','val':val});	
+});
+
+t=t+t2+'</select></div>';
+
+$(".anchorFix").each(function(){
+	
+	if($(this).attr('id').toString().match(/opt/))
+		{
+			
+			var id=$(this).attr('id').toString();
+			var val='';
+			var prev='';
+			var nxt='';
+			var len=cHLines.length;							
+			//alert(id);
+			for(var i=0;i<len;i++)
+			{
+				if(cHLines[i].id.toString().match(id))
+				{
+					val=cHLines[i].val;
+					
+					var hhh='<p class="pagebreak">&nbsp;</p><div ><table width="100%"><tr><td  style="float: left;width:auto"><p class="chaphead" ><b>'+val+			
+						'</p></td><td style="text-align: right;width:25%">'+t;
+					
+						
+						if(i==0 && len!=1)
+						{
+							hhh=hhh+'<td style="text-align: right;width:5%"><a href="#'+cHLines[i+1].id+'"><span class="glyphicon glyphicon-chevron-down" style=""></span></a>'+			 				
+						'</td></tr></table></div>';
+													
+						}
+						else if(i==len-1 && i!=0)
+						{
+							hhh=hhh+'<td style="text-align: right;width:5%"><a href="#'+cHLines[i-1].id+'"><span class="glyphicon glyphicon-chevron-up" style=""></span></a>'+			 				
+						'</td></tr></table></div>';
+						}
+						else  if(i>0 && i<len-1)
+						{
+							hhh=hhh+'<td style="text-align: right;width:2.5%"><a href="#'+cHLines[i-1].id+'"><span class="glyphicon glyphicon-chevron-up" style=""></span></a>'+			 				
+						'</td><td style="text-align: right;width:2.5%"><a href="#'+cHLines[i+1].id+'"><span class="glyphicon glyphicon-chevron-down" style=""></span></a>'+			 				
+						'</td></tr></table></div>';
+						}
+												
+			$(this).after(hhh);	
+					
+			}
+				
+			}
+		}		
+	
+});
+
+
+
 
 var showPopover = function () {
     $(this).popover('show');
@@ -53,8 +87,6 @@ var showPopover = function () {
 , hidePopover = function () {
    // $(this).popover('hide');
 }; 
-
-
 
 ////////////////////
     var refs = {};
@@ -74,12 +106,6 @@ var showPopover = function () {
 	});
 	
 	
-
-
-$('body').on('click', '.popover a', function() {
-  //$('sup').popover('hide');
-});
-
 	
 $('sup').popover({
 	'html' : true,
@@ -91,23 +117,6 @@ $('sup').popover({
 	}
 })
 .click(showPopover);
-
-
-var figPopup=function(e){
-	$('.cFigure').each(function () {       
-        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-            $(this).popover('hide');
-        }
- });
-};
-
-var supPopup=function(e){
-	$('sup').each(function () {       
-        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-            $(this).popover('hide');
-        }
- });
-};
 
 
 $('body').on('click', function (e) {
@@ -128,14 +137,9 @@ $('body').on('click', function (e) {
     $('.cFigure').each(function () { 
     
         if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-        	//alert("closing image popover");
            $(this).popover('hide');
-           //$(this).prevAll('.popover').popover('hide');           
-       }
-       else
-       {
-       //	alert("fsnfdgkmdkgf");
-       }
+           
+       }       
       
  });
   
@@ -154,25 +158,6 @@ $('body').on('click', function (e) {
 });
 
 
-
-// $( "sup" ).click(function(event){
-	// alert("op");
-	    // $(this).tooltip('open');
-// }); 
-// 
-	// $(".preview").click(function(){
-// 		
-		// $( "#dialog" ).html("<img src='hd/"+$(this).attr('src')+"'/>");
-	    // setTimeout(function(){
-		    // $( "#dialog" ).dialog({
-				// width:'auto',
-		    	// modal: true,
-		        // close: function(event, ui) { $('#wrap').show(); },
-		        // open: function(event, ui) { $('.ui-widget-overlay').bind('click', function(){ $("#dialog").dialog('close'); }); }    	
-		    // });
-		    // $(".ui-dialog-titlebar").hide();
-		// }, 100);    
-	// });
 var hiddenFigs=[];
 var hiddenTables=[];
 var hiddenLists=[];
@@ -410,3 +395,24 @@ $('.cList').popover({
     
     	
   });
+  
+
+
+var scrollToSubjectGlobal=function scrollToSubject(sb) {
+				
+					
+				var b = "";
+				
+				for (var i = 0; i <cHLines.length ; i++) {					
+					if (cHLines[i].id.toString().match(sb)) {
+						b = cHLines[i].id;
+				//	alert($(this).html());
+					//alert("inisde "+cHLines.length+ " "+sb.toString()+" "+b);
+					//alert(document.getElementById(b).html());						
+					}
+				}
+				
+				document.getElementById(b).scrollIntoView();
+				
+};
+
